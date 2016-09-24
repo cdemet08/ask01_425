@@ -1,8 +1,13 @@
 package server;
 
+import com.sun.jndi.ldap.Connection;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.ServerSocket;
+import java.net.Socket;
+
 import static java.lang.System.exit;
 
 /**
@@ -10,9 +15,13 @@ import static java.lang.System.exit;
  */
 public class Server {
 
-	static int portNumber=0;
+	private static int portNumber=0;
 
-	static int numRepetitions=0;
+	private static int numRepetitions=0;
+
+	private static ServerSocket serverSocket;
+
+	private static Socket clientSocket = null;
 
 	public static void main(String[] args) {
 
@@ -23,10 +32,32 @@ public class Server {
 		 portNumber = Integer.parseInt(args[0]);
 		 System.out.println("The port number for server is:"+portNumber);
 
-		//
-		numRepetitions = Integer.parseInt(args[1]);
-		System.out.println("The repetitions for client:"+numRepetitions);
 
+		//	TODO fix this
+		//numRepetitions = Integer.parseInt(args[1]);
+		//System.out.println("The repetitions for client:"+numRepetitions);
+
+		//	wait for connection
+		try {
+			serverSocket = new ServerSocket(portNumber);
+			System.out.println("Server started.In port:" + portNumber);
+		} catch (Exception e) {
+			System.err.println("Port already in use.");
+			System.exit(1);
+		}
+
+		while (true) {
+			try {
+				clientSocket = serverSocket.accept();
+				System.out.println("Accepted connection : " + clientSocket);
+
+				Thread t = new Thread(new ConnectionThread(clientSocket));
+				t.start();
+
+			} catch (Exception e) {
+				System.err.println("Error in connection attempt.");
+			}
+		}
 
 
 
@@ -35,8 +66,8 @@ public class Server {
 
 	private static void checkInputParameter(String[] args) {
 		if(args.length < 1) {
-			System.out.println("Give the port number and repetitions.");
-			exit(0);
+			System.err.println("Give the port number and repetitions.");
+			exit(1);
 		}
 	}
 
