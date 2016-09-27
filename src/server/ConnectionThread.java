@@ -9,9 +9,6 @@ import Object.MessageObject;
  */
 public class ConnectionThread implements Runnable {
 
-	//Socket and Stream
-	private PrintWriter socketOut;
-	private BufferedReader socketIn;
 
 	ObjectOutputStream objectSocketOut ;
 	ObjectInputStream objectSocketIn;
@@ -25,7 +22,7 @@ public class ConnectionThread implements Runnable {
 	private MessageObject msgServer = new MessageObject();
 
 	//object from the client
-	private MessageObject msgClient =null;
+	private MessageObject msgClient = new MessageObject();
 
 	private Socket clientSocket;
 
@@ -39,8 +36,6 @@ public class ConnectionThread implements Runnable {
 	@Override
 	public void run() {
 
-		//
-		String serverMsg = new String();
 
 		String userIDStr = new String();
 
@@ -52,7 +47,7 @@ public class ConnectionThread implements Runnable {
 		userIDStr = receiveMsg();
 
 		// create msg to send to server
-		this.msgServer = createMsgToSend(userIDStr);
+		 createMsgToSend(userIDStr);
 
 		//	send the answer to the client
 		sendMsgToClient(this.msgServer);
@@ -61,13 +56,13 @@ public class ConnectionThread implements Runnable {
 
 	}
 
-	private MessageObject createMsgToSend(String userId){
+	private void createMsgToSend(String userId){
 
-		MessageObject msgToSend = new MessageObject();
+		this.msgServer = new MessageObject();
+
+		this.msgServer.setServerMsg("WELCOME " + userId);
 
 		String payloadMsg = new String();
-
-		msgToSend.setServerMsg("WELCOME " + userId);
 
 
 		//call payload function to create
@@ -75,7 +70,7 @@ public class ConnectionThread implements Runnable {
 		//payloadMsg = createPayload();
 
 
-		return msgToSend;
+
 
 	}
 
@@ -106,10 +101,10 @@ public class ConnectionThread implements Runnable {
 		try {
 
 
-			while (( msgClient = (MessageObject) objectSocketIn.readObject()) != null) {
+			while (( this.msgClient = (MessageObject) objectSocketIn.readObject()) != null) {
 
-				userIDStr = msgClient.getIdClient();
-				ipAndPortClient = msgClient.getClientIP_Port();
+				userIDStr = this.msgClient.getIdClient();
+				ipAndPortClient = this.msgClient.getClientIP_Port();
 
 				System.out.println("ip client: " + ipAndPortClient);
 
@@ -125,8 +120,6 @@ public class ConnectionThread implements Runnable {
 			System.err.println("sec");
 			e.printStackTrace();
 		}
-
-
 
 		//	return the ID client thread
 		return userIDStr;
@@ -149,15 +142,9 @@ public class ConnectionThread implements Runnable {
 		try {
 
 
-
-
 			stdin = new BufferedReader(new InputStreamReader(System.in));
 			objectSocketOut = new ObjectOutputStream(clientSocket.getOutputStream());
 			objectSocketIn = new ObjectInputStream(clientSocket.getInputStream());
-
-			//socketOut = new PrintWriter(clientSocket.getOutputStream(), true);
-			//socketIn = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-
 
 		} catch (Exception e) {
 			System.err.println("Cannot connect to the server, try again later.");

@@ -18,13 +18,9 @@ public class UserClientThread implements Runnable {
 
 	//Socket and Stream
 	private Socket socket;
-	private PrintWriter socketOut ;
-	private BufferedReader socketIn ;
 
 	ObjectOutputStream objectSocketOut ;
 	ObjectInputStream objectSocketIn;
-
-
 
 	//
 	private BufferedReader stdin;
@@ -56,7 +52,7 @@ public class UserClientThread implements Runnable {
 
 	@Override
 	public void run() {
-		String clientMsg = new String();
+
 		InetAddress IP;
 		String ipAddress = new String();
 
@@ -71,7 +67,7 @@ public class UserClientThread implements Runnable {
 		//	TODO check what IP address to send
 
 		//	create the client msg to send to server
-		this.msgClient = createClientMsg(ipAddress);
+		createClientMsg(ipAddress);
 
 		//	send the msg to server
 		sendMsg(this.msgClient);
@@ -96,14 +92,13 @@ public class UserClientThread implements Runnable {
 		try {
 
 
-			while (( msgServer = (MessageObject) objectSocketIn.readObject()) != null) {
+			while (( this.msgServer = (MessageObject) objectSocketIn.readObject()) != null) {
 
-				welcome = msgServer.getServerMsg();
+				welcome = this.msgServer.getServerMsg();
 				System.out.println(welcome);
 
 				break;
 			}
-
 
 
 		} catch (ClassNotFoundException e) {
@@ -115,36 +110,31 @@ public class UserClientThread implements Runnable {
 	}
 
 
-	private MessageObject createClientMsg(String ipAddress){
+	private void createClientMsg(String ipAddress){
 
-		MessageObject msgClientToSend = new MessageObject();
-
-
-		msgClientToSend.setClientMsg("HELLO");
-		msgClientToSend.setClientIP_Port(ipAddress + ":" +this.port);
-		msgClientToSend.setIdClient(String.valueOf(idThread));
+		this.msgClient = new MessageObject();
 
 
-		//call payload function to create
-		//TODO // FIXME: 9/27/16
-		//payloadMsg = createPayload();
+		this.msgClient.setClientMsg("HELLO");
+		this.msgClient.setClientIP_Port(ipAddress + ":" +this.port);
+		this.msgClient.setIdClient(String.valueOf(idThread));
 
-		return msgClientToSend;
+
 
 	}
 
 	/**
 	 *
 	 */
-	private void sendMsg(MessageObject clientMsg){
+	private void sendMsg(MessageObject clientMsgToSend){
 
 
-		System.out.println("Send msg: "+clientMsg.getClientMsg());
+		System.out.println("Send msg: "+clientMsgToSend.getClientMsg());
 
 		//	send the object to the client
 		try {
 
-			objectSocketOut.writeObject(clientMsg);
+			objectSocketOut.writeObject(clientMsgToSend);
 			objectSocketOut.flush();
 
 		} catch (IOException e) {
