@@ -2,6 +2,8 @@ package server;
 
 import java.io.*;
 import java.net.Socket;
+import java.util.Random;
+
 import Object.MessageObject;
 
 
@@ -116,15 +118,8 @@ public class ConnectionThread implements Runnable {
 
 		this.msgServer.setServerMsg("WELCOME " + userId);
 
-		String payloadMsg = new String();
-
-
-		//call payload function to create
-		//TODO // FIXME: 9/27/16
-		//payloadMsg = createPayload();
-
-
-
+		//create the payload function
+		createPayload();
 
 	}
 
@@ -147,14 +142,28 @@ public class ConnectionThread implements Runnable {
 
 
 	/**
-	 * TODO
-	 * crete the payload msg to send to the client
+	 *
+	 * create the payload msg to send to the client
 	 * @return
 	 */
-	private String  createPayload(){
-		String payloadTemp = new String();
+	private void  createPayload(){
 
-		return payloadTemp;
+		Random rand = new Random();
+		// size in kb we must convert in byte
+		int size = rand.nextInt(1700);
+		size = size + 301;
+		size = size * 1024; //for byte
+
+		byte[] payloadTemp = new byte[size];
+
+		for(int i=0; i < size; i++){
+			payloadTemp[i] = (byte) rand.nextInt(255);
+		}
+
+		// set the payload in msgServer
+		msgServer.setPayloadServer(payloadTemp);
+
+
 	}
 
 	private void initializeSocket() {

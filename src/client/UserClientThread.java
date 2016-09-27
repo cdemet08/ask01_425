@@ -122,7 +122,9 @@ public class UserClientThread implements Runnable {
 			while (( this.msgServer = (MessageObject) objectSocketIn.readObject()) != null) {
 
 				welcome = this.msgServer.getServerMsg();
-				//System.out.println(welcome);
+				int sizePayload = this.msgServer.getPayloadServer().length;
+
+				System.out.println("size payload:"+sizePayload/1024);
 
 				break;
 			}
