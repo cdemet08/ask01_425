@@ -2,8 +2,7 @@ package server;
 
 import java.io.*;
 import java.net.Socket;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import Object.MessageObject;
 
 /**
  * Created by cdemet08 on 9/24/16.
@@ -14,21 +13,32 @@ public class ConnectionThread implements Runnable {
 	private PrintWriter socketOut;
 	private BufferedReader socketIn;
 
+	ObjectOutputStream objectSocketOut ;
+	ObjectInputStream objectSocketIn;
+
+	private int idServerThread = 0;
+
 	//
 	private BufferedReader stdin;
 
+	//object server
+	private MessageObject msgServer = new MessageObject();
+
+	//object from the client
+	private MessageObject msgClient =null;
 
 	private Socket clientSocket;
 
 
-	public ConnectionThread(Socket client) {
+	public ConnectionThread(Socket client, int idServerThread) {
 		this.clientSocket = client;
+		this.idServerThread = idServerThread;
 	}
 
 
 	@Override
 	public void run() {
-		
+
 		//
 		String serverMsg = new String();
 
@@ -42,73 +52,81 @@ public class ConnectionThread implements Runnable {
 		userIDStr = receiveMsg();
 
 		// create msg to send to server
-		serverMsg = createMsgToSend(userIDStr);
+		this.msgServer = createMsgToSend(userIDStr);
 
 		//	send the answer to the client
-		sendMsgToClient(serverMsg);
+		sendMsgToClient(this.msgServer);
 
 
 
 	}
 
-	private String createMsgToSend(String userId){
+	private MessageObject createMsgToSend(String userId){
 
-		String msgToSend = new String();
+		MessageObject msgToSend = new MessageObject();
 
 		String payloadMsg = new String();
 
-		msgToSend = "WELCOME " + userId;
-		msgToSend += "\n";
+		msgToSend.setServerMsg("WELCOME " + userId);
+
 
 		//call payload function to create
 		//TODO // FIXME: 9/27/16
 		//payloadMsg = createPayload();
 
-		msgToSend += payloadMsg;
 
 		return msgToSend;
 
 	}
 
 
-	private void sendMsgToClient(String msgToSend){
+	private void sendMsgToClient(MessageObject objectServerSend){
 
 
-		//	send the msg to the server
-		socketOut.write(msgToSend);
-		socketOut.flush();
+		//	send the object to the client
+		try {
+
+			objectSocketOut.writeObject(objectServerSend);
+			objectSocketOut.flush();
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 
 	}
 
 	private String  receiveMsg(){
 
-		String clientMsg = new String();
 
-		String lines[];
+		String ipAndPortClient = new String();
 
 		String userIDStr = new String();
 
 		// read from socket the message
 		try {
 
-			while ((clientMsg = socketIn.readLine()) != null) {
 
+			while (( msgClient = (MessageObject) objectSocketIn.readObject()) != null) {
 
+				userIDStr = msgClient.getIdClient();
+				ipAndPortClient = msgClient.getClientIP_Port();
 
-				System.out.println(clientMsg); //print
+				System.out.println("ip client: " + ipAndPortClient);
 
-				lines = clientMsg.split("\\n");
-				System.out.println("len:"+lines.length);
-
-				//userIDStr = lines[2];
-
-
-
+				break;
 			}
 
-		} catch (IOException ex) {
 
+
+		} catch (ClassNotFoundException e) {
+			System.err.println("first");
+			e.printStackTrace();
+		} catch (IOException e) {
+			System.err.println("sec");
+			e.printStackTrace();
 		}
+
+
 
 		//	return the ID client thread
 		return userIDStr;
@@ -130,9 +148,15 @@ public class ConnectionThread implements Runnable {
 
 		try {
 
+
+
+
 			stdin = new BufferedReader(new InputStreamReader(System.in));
-			socketOut = new PrintWriter(clientSocket.getOutputStream(), true);
-			socketIn = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+			objectSocketOut = new ObjectOutputStream(clientSocket.getOutputStream());
+			objectSocketIn = new ObjectInputStream(clientSocket.getInputStream());
+
+			//socketOut = new PrintWriter(clientSocket.getOutputStream(), true);
+			//socketIn = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
 
 
 		} catch (Exception e) {

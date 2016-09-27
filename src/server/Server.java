@@ -25,6 +25,8 @@ public class Server {
 
 	public static void main(String[] args) {
 
+		int threadNum=0;
+
 		//	check input parameter
 		checkInputParameter(args);
 
@@ -46,13 +48,17 @@ public class Server {
 			System.exit(1);
 		}
 
+
+
 		while (true) {
 			try {
 				clientSocket = serverSocket.accept();
 				System.out.println("Accepted connection : " + clientSocket);
 
-				Thread t = new Thread(new ConnectionThread(clientSocket));
+				Thread t = new Thread(new ConnectionThread(clientSocket,threadNum));
 				t.start();
+
+				threadNum++;
 
 			} catch (Exception e) {
 				System.err.println("Error in connection attempt.");

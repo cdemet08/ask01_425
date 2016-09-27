@@ -1,13 +1,15 @@
+package Object;
+
 import java.io.Serializable;
 
 /**
- * Created by oforos on 9/27/16.
+ * Created by cdemet08 on 9/27/16.
  */
 public class MessageObject implements Serializable {
 
-	private static final long serialVersionUID = 5950169519310163575L;
+	private static final long serialVersionUID = 15L;
 
-	private int idClient = 0;
+	private String idClient = new String();
 
 	private String clientMsg = new String();
 
@@ -15,7 +17,7 @@ public class MessageObject implements Serializable {
 
 	private String clientIP_Port = new String();
 
-	private byte[] payloadServer = null;
+	private byte[] payloadServer = new byte[0];
 
 
 	public void setPayloadServer(byte[] payloadServer){
@@ -51,11 +53,11 @@ public class MessageObject implements Serializable {
 		return this.clientMsg;
 	}
 
-	public void setIdClient(int idClient){
+	public void setIdClient(String idClient){
 		this.idClient = idClient;
 	}
 
-	public int getIdClient(){
+	public String  getIdClient(){
 		return this.idClient;
 	}
 
