@@ -4,6 +4,8 @@ import java.io.*;
 import java.net.Socket;
 import Object.MessageObject;
 
+
+
 /**
  * Created by cdemet08 on 9/24/16.
  */
@@ -13,6 +15,7 @@ public class ConnectionThread implements Runnable {
 	ObjectOutputStream objectSocketOut ;
 	ObjectInputStream objectSocketIn;
 
+	private int maxRequest = 1000;
 	private int idServerThread = 0;
 
 	//
@@ -36,6 +39,7 @@ public class ConnectionThread implements Runnable {
 	@Override
 	public void run() {
 
+		int requestNum=0;
 
 		String userIDStr = new String();
 
@@ -43,16 +47,66 @@ public class ConnectionThread implements Runnable {
 		//	initialize thread socket
 		initializeSocket();
 
-		// call function to receive the msg from client
-		userIDStr = receiveMsg();
-
-		// create msg to send to server
-		 createMsgToSend(userIDStr);
-
-		//	send the answer to the client
-		sendMsgToClient(this.msgServer);
+		while(maxRequest > requestNum) {
 
 
+			// call function to receive the msg from client
+			userIDStr = receiveMsg();
+
+			//	exit - close the thread
+			if(userIDStr.matches("stop")){
+				// stop from while
+				break;
+			}
+
+			// create msg to send to server
+			createMsgToSend(userIDStr);
+
+			//	send the answer to the client
+			sendMsgToClient(this.msgServer);
+
+			requestNum++;
+
+		}
+
+		System.out.println("request: " + requestNum + " from thread: " + idServerThread);
+
+	}
+
+	private String receiveMsg(){
+
+		String ipAndPortClient = new String();
+
+		String userIDStr = new String();
+
+		// read from socket the message
+		try {
+
+			while (( this.msgClient = (MessageObject) objectSocketIn.readObject()) != null) {
+
+				userIDStr = this.msgClient.getIdClient();
+
+				if(msgClient.getClientMsg().matches("STOP")){
+					userIDStr="stop";
+				}
+
+				ipAndPortClient = this.msgClient.getClientIP_Port();
+
+				//System.out.println("ip client: " + ipAndPortClient);
+
+				break;
+			}
+
+		} catch (ClassNotFoundException e) {
+			System.err.println("first");
+			e.printStackTrace();
+		} catch (IOException e) {
+			System.err.println("sec");
+			e.printStackTrace();
+		}
+
+		//	return the ID client thread
+		return userIDStr;
 
 	}
 
@@ -90,41 +144,7 @@ public class ConnectionThread implements Runnable {
 
 	}
 
-	private String  receiveMsg(){
 
-
-		String ipAndPortClient = new String();
-
-		String userIDStr = new String();
-
-		// read from socket the message
-		try {
-
-
-			while (( this.msgClient = (MessageObject) objectSocketIn.readObject()) != null) {
-
-				userIDStr = this.msgClient.getIdClient();
-				ipAndPortClient = this.msgClient.getClientIP_Port();
-
-				System.out.println("ip client: " + ipAndPortClient);
-
-				break;
-			}
-
-
-
-		} catch (ClassNotFoundException e) {
-			System.err.println("first");
-			e.printStackTrace();
-		} catch (IOException e) {
-			System.err.println("sec");
-			e.printStackTrace();
-		}
-
-		//	return the ID client thread
-		return userIDStr;
-
-	}
 
 	/**
 	 * TODO

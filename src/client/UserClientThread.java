@@ -56,6 +56,8 @@ public class UserClientThread implements Runnable {
 		InetAddress IP;
 		String ipAddress = new String();
 
+		int simulationTime = 300;
+
 
 		//
 		initializeSocket();
@@ -66,17 +68,42 @@ public class UserClientThread implements Runnable {
 		System.out.println("IP of my system is := "+ipAddress);
 		//	TODO check what IP address to send
 
-		//	create the client msg to send to server
-		createClientMsg(ipAddress);
+		//	run for 300+ times
+		// TODO random the simulation time min 300
 
-		//	send the msg to server
+		for(int i = 0; i < simulationTime; i++ ) {
+
+			//	create the client msg to send to server
+			createClientMsg(ipAddress);
+
+			//	send the msg to server
+			sendMsg(this.msgClient);
+
+			// reveive the msg from server
+			receiveMsg();
+
+		}
+
+		createStopClientMsg();
+
 		sendMsg(this.msgClient);
 
-		// reveive the msg from server
-		receiveMsg();
+		//TODO send STOP msg to the server
 
 
 
+
+	}
+
+
+
+	private void createStopClientMsg(){
+
+		this.msgClient = new MessageObject();
+
+
+		this.msgClient.setClientMsg("STOP");
+		this.msgClient.setIdClient(String.valueOf(idThread));
 
 
 	}
@@ -95,7 +122,7 @@ public class UserClientThread implements Runnable {
 			while (( this.msgServer = (MessageObject) objectSocketIn.readObject()) != null) {
 
 				welcome = this.msgServer.getServerMsg();
-				System.out.println(welcome);
+				//System.out.println(welcome);
 
 				break;
 			}
@@ -120,7 +147,6 @@ public class UserClientThread implements Runnable {
 		this.msgClient.setIdClient(String.valueOf(idThread));
 
 
-
 	}
 
 	/**
@@ -129,7 +155,7 @@ public class UserClientThread implements Runnable {
 	private void sendMsg(MessageObject clientMsgToSend){
 
 
-		System.out.println("Send msg: "+clientMsgToSend.getClientMsg());
+		//System.out.println("Send msg: "+clientMsgToSend.getClientMsg());
 
 		//	send the object to the client
 		try {
