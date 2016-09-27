@@ -17,7 +17,6 @@ public class ConnectionThread implements Runnable {
 	//
 	private BufferedReader stdin;
 
-	private int clientID = 0;
 
 	private Socket clientSocket;
 
@@ -29,23 +28,103 @@ public class ConnectionThread implements Runnable {
 
 	@Override
 	public void run() {
+		
+		//
+		String serverMsg = new String();
 
+		String userIDStr = new String();
+
+
+		//	initialize thread socket
 		initializeSocket();
 
-		String clientSelection;
+		// call function to receive the msg from client
+		userIDStr = receiveMsg();
 
-		try {
+		// create msg to send to server
+		serverMsg = createMsgToSend(userIDStr);
 
-			while ((clientSelection = socketIn.readLine()) != null) {
-				System.out.println(clientSelection);
-			}
+		//	send the answer to the client
+		sendMsgToClient(serverMsg);
 
-		} catch (IOException ex) {
-			
-		}
+
 
 	}
 
+	private String createMsgToSend(String userId){
+
+		String msgToSend = new String();
+
+		String payloadMsg = new String();
+
+		msgToSend = "WELCOME " + userId;
+		msgToSend += "\n";
+
+		//call payload function to create
+		//TODO // FIXME: 9/27/16
+		//payloadMsg = createPayload();
+
+		msgToSend += payloadMsg;
+
+		return msgToSend;
+
+	}
+
+
+	private void sendMsgToClient(String msgToSend){
+
+
+		//	send the msg to the server
+		socketOut.write(msgToSend);
+		socketOut.flush();
+
+	}
+
+	private String  receiveMsg(){
+
+		String clientMsg = new String();
+
+		String lines[];
+
+		String userIDStr = new String();
+
+		// read from socket the message
+		try {
+
+			while ((clientMsg = socketIn.readLine()) != null) {
+
+
+
+				System.out.println(clientMsg); //print
+
+				lines = clientMsg.split("\\n");
+				System.out.println("len:"+lines.length);
+
+				//userIDStr = lines[2];
+
+
+
+			}
+
+		} catch (IOException ex) {
+
+		}
+
+		//	return the ID client thread
+		return userIDStr;
+
+	}
+
+	/**
+	 * TODO
+	 * crete the payload msg to send to the client
+	 * @return
+	 */
+	private String  createPayload(){
+		String payloadTemp = new String();
+
+		return payloadTemp;
+	}
 
 	private void initializeSocket() {
 

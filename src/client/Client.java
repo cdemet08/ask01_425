@@ -35,12 +35,12 @@ public class Client {
 
       System.out.println("The server ip address is:" + ipAddress + " and port:" + port);
 
-		int i = 0;
-		while (i < N) {
+		int i = 1;
+		while (i <= N) {
 
 			try {
 
-				Thread t = new Thread(new UserClientThread(ipAddress,port));
+				Thread t = new Thread(new UserClientThread(ipAddress,port,i));
 				t.start();
 
 			} catch (Exception e) {
