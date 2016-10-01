@@ -1,7 +1,5 @@
 package client;
 
-import server.*;
-
 import java.io.*;
 import java.net.InetAddress;
 import java.net.Socket;
@@ -66,10 +64,9 @@ public class UserClientThread implements Runnable {
 		IP = takeIP();
 		ipAddress = IP.getHostAddress();
 		System.out.println("IP of my system is := "+ipAddress);
-		//	TODO check what IP address to send
 
-		//	run for 300+ times
-		// TODO random the simulation time min 300
+
+		long start = System.currentTimeMillis();
 
 		for(int i = 0; i < simulationTime; i++ ) {
 
@@ -79,10 +76,21 @@ public class UserClientThread implements Runnable {
 			//	send the msg to server
 			sendMsg(this.msgClient);
 
+
 			// reveive the msg from server
 			receiveMsg();
 
+
+
 		}
+
+		long end = System.currentTimeMillis();
+
+		long allRTT = end - start;
+		double latency = allRTT / simulationTime ;
+
+		System.out.println("Client: "+idThread+" RTT all: " + latency);
+
 
 		createStopClientMsg();
 

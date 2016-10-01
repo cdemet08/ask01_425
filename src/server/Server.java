@@ -31,7 +31,6 @@ public class Server {
 		 System.out.println("The port number for server is:"+portNumber);
 
 
-		//	TODO fix this
 		//numRepetitions = Integer.parseInt(args[1]);
 		//System.out.println("The repetitions for client:"+numRepetitions);
 
@@ -43,6 +42,8 @@ public class Server {
 			System.err.println("Port already in use.");
 			System.exit(1);
 		}
+
+
 
 
 
