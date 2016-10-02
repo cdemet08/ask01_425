@@ -2,7 +2,7 @@
 
 `@author: cdemet08 - Christoforos Demetriou`
 
-`@author: FrLeand - Frederikos `
+`@author: FrLeand - Frederikos Leandrou
 
 ````
 
