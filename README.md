@@ -12,6 +12,11 @@ with random or specific request and users in the server.
 The users run simultaneously and they send request in server. 
 The server answer with one message and payload with random byte in size of 300Kb-2Mb.
 
+We calculate the RTT in the client side and in the server side the throughput,cpu utilization
+and memory.
+
+We run the program for 1,2 and 4 cpu and we see the difference.
+
 ````
 
 
