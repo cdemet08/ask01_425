@@ -16,7 +16,7 @@ import static java.lang.System.exit;
 public class Client {
 
 
-	private static int N = 10;
+	private static int N = 5;
 
 	// config variable
    private static String ipAddress;
