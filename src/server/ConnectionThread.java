@@ -1,47 +1,66 @@
 package server;
 
 import java.io.*;
-
-
 import java.lang.management.ManagementFactory;
 import java.net.Socket;
 import java.util.Random;
-
 import Object.MessageObject;
-
 import javax.management.*;
 
 
 /**
+ * The thread for server side to answer and get the message from the client
  * Created by cdemet08 on 9/24/16.
  */
 public class ConnectionThread implements Runnable {
 
 
+	/**
+	 * The stream to send and get the message from the client
+	 */
 	ObjectOutputStream objectSocketOut ;
 	ObjectInputStream objectSocketIn;
 
+	/**
+	 * max request for message
+	 */
 	private int maxRequest = 1000;
+
+	/**
+	 * the server id thread
+	 */
 	private int idServerThread = 0;
 
-
-
-
-	//object server
+	/**
+	 * Message object for the server
+	 */
 	private MessageObject msgServer = new MessageObject();
 
-	//object from the client
+	/**
+	 * Message object for the client
+ 	 */
 	private MessageObject msgClient = new MessageObject();
 
+	/**
+	 * create the client socket to connect
+	 */
 	private Socket clientSocket;
 
 
+	/**
+	 * ConnectionThread constructor to set the client socket and id thread server
+	 * @param client
+	 * @param idServerThread
+	 */
 	public ConnectionThread(Socket client, int idServerThread) {
 		this.clientSocket = client;
 		this.idServerThread = idServerThread;
 	}
 
 
+	/**
+	 * run ConnectionThread function
+	 */
 	@Override
 	public void run() {
 		int mb = 1024 * 1024;
@@ -145,6 +164,10 @@ public class ConnectionThread implements Runnable {
 	}
 
 
+	/**
+	 * Get the cpu load of the computer
+	 * @return cpuload
+	 */
 	private double getProcessCpuLoad() {
 
 		MBeanServer mbs    = ManagementFactory.getPlatformMBeanServer();
@@ -174,6 +197,11 @@ public class ConnectionThread implements Runnable {
 		return ((int)(value * 1000) / 10.0);
 	}
 
+
+	/**
+	 * wait to get the message from client
+	 * @return message
+	 */
 	private String receiveMsg(){
 
 		String ipAndPortClient = new String();
@@ -211,9 +239,12 @@ public class ConnectionThread implements Runnable {
 
 	}
 
+
+	/**
+	 * create the message to send to the client
+	 * @param userId
+	 */
 	private void createMsgToSend(String userId){
-
-
 
 		this.msgServer.setServerMsg("WELCOME " + userId);
 
@@ -223,6 +254,10 @@ public class ConnectionThread implements Runnable {
 	}
 
 
+	/**
+	 * send the message to the client
+	 * @param objectServerSend
+	 */
 	private void sendMsgToClient(MessageObject objectServerSend){
 
 
@@ -243,7 +278,6 @@ public class ConnectionThread implements Runnable {
 	/**
 	 *
 	 * create the payload msg to send to the client
-	 * @return
 	 */
 	private void  createPayload(){
 
@@ -265,10 +299,12 @@ public class ConnectionThread implements Runnable {
 
 	}
 
+	/**
+	 * Initialize the socket to send and receive the message
+	 */
 	private void initializeSocket() {
 
 		try {
-
 
 			objectSocketOut = new ObjectOutputStream(clientSocket.getOutputStream());
 			objectSocketIn = new ObjectInputStream(clientSocket.getInputStream());

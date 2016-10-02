@@ -1,27 +1,34 @@
 package client;
 
-import com.sun.jna.platform.win32.Netapi32Util;
-import server.ConnectionThread;
-
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.io.PrintStream;
-import java.net.Socket;
-
 import static java.lang.System.exit;
 
 /**
+ * The client class to send the message to the server
+ * Simulate N users
  * Created by cdemet08 on 9/23/16.
  */
 public class Client {
 
-
+	/**
+	 * N users to send request to the server
+	 */
 	private static int N = 5;
 
-	// config variable
-   private static String ipAddress;
-   static int port=0;
+	/**
+	 * the ip address to connect to the server
+ 	 */
+	private static String ipAddress;
 
+	/**
+	 * the port to connect to the server
+	 */
+   private static int port=0;
+
+
+	/**
+	 * the main function to run the client
+	 * @param args
+	 */
    public static void main(String[] args) {
 
       //	check input parameter
@@ -55,7 +62,11 @@ public class Client {
    }
 
 
-   private static void checkInputParameter(String[] args) {
+	/**
+	 * check parameter from the user
+	 * @param args
+	 */
+	private static void checkInputParameter(String[] args) {
       if(args.length < 2) {
          System.err.println("Give the port number and the ip address.");
          exit(1);

@@ -4,41 +4,62 @@ import java.io.*;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import Object.MessageObject;
 
 
 /**
+ * The class to run for every user and send request to the server
  * Created by cdemet08 on 9/24/16.
  */
 public class UserClientThread implements Runnable {
 
-	//Socket and Stream
+	/**
+	 * Socket to connect to the server
+ 	 */
 	private Socket socket;
 
+	/**
+	 * Socket to send the data to the server
+	 */
 	ObjectOutputStream objectSocketOut ;
+
+	/**
+	 * Socket to receive the data from the server
+	 */
 	ObjectInputStream objectSocketIn;
 
-	//
-	private BufferedReader stdin;
 
-	//	ID client thread
+	/**
+	 * The client id thread
+ 	 */
 	private int idThread = 0;
 
-	// config variable
+	/**
+	 * The server ip address
+ 	 */
 	private String serverIPAddress;
+
+	/**
+	 * The server port
+	 */
 	private int port=0;
 
-	//object server
+	/**
+	 * The message object from receive from the server
+ 	 */
 	private MessageObject msgServer = new MessageObject();
 
-	//object from the client
+	/**
+	 * The message object to send to the server
+ 	 */
 	private MessageObject msgClient = new MessageObject();
 
 
 	/**
-	 * Constructor
+	 * Constructor the user thread
+	 * @param ipAddress
+	 * @param port
+	 * @param id
 	 */
 	public UserClientThread(String ipAddress,int port,int id) {
 
@@ -96,15 +117,15 @@ public class UserClientThread implements Runnable {
 
 		sendMsg(this.msgClient);
 
-		//TODO send STOP msg to the server
 
 
 
 
 	}
 
-
-
+	/**
+	 * Create stop message to send to the server
+	 */
 	private void createStopClientMsg(){
 
 		this.msgClient = new MessageObject();
@@ -116,25 +137,22 @@ public class UserClientThread implements Runnable {
 
 	}
 
-
+	/**
+	 * Wait to take the message from the server
+	 */
 	private void receiveMsg(){
-
 
 		String welcome;
 
-
 		/// read from socket the message
 		try {
-
 
 			while (( this.msgServer = (MessageObject) objectSocketIn.readObject()) != null) {
 
 				welcome = this.msgServer.getServerMsg();
 
-
 				break;
 			}
-
 
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
@@ -144,7 +162,10 @@ public class UserClientThread implements Runnable {
 
 	}
 
-
+	/**
+	 *	Create the Message to send to the server
+	 * @param ipAddress
+	 */
 	private void createClientMsg(String ipAddress){
 
 		this.msgClient = new MessageObject();
@@ -158,7 +179,7 @@ public class UserClientThread implements Runnable {
 	}
 
 	/**
-	 *
+	 * Send the message
 	 */
 	private void sendMsg(MessageObject clientMsgToSend){
 
@@ -178,6 +199,10 @@ public class UserClientThread implements Runnable {
 
 	}
 
+	/**
+	 *	Take the ip to the client
+	 * @return
+	 */
 	private InetAddress takeIP(){
 		InetAddress IP= null;
 		try {
@@ -190,15 +215,14 @@ public class UserClientThread implements Runnable {
 
 	}
 
+	/**
+	 * Initialize the Socket and Stream
+	 */
 	private void initializeSocket(){
 
 		try {
 			socket = new Socket(serverIPAddress, port);
-			stdin = new BufferedReader(new InputStreamReader(System.in));
 
-
-
-			stdin = new BufferedReader(new InputStreamReader(System.in));
 			objectSocketOut = new ObjectOutputStream(socket.getOutputStream());
 			objectSocketIn = new ObjectInputStream(socket.getInputStream());
 
